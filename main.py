@@ -44,22 +44,12 @@ def main():
 
     save_dir = args.output_dir + '/{}/'.format(args.target_comp)
 
-    # test_index = pd.read_csv(os.path.join(save_dir, 'test.csv'))
-    # train_val_index = pd.read_csv(os.path.join(save_dir, 'train_val.csv'))
-    # test_set, train_val_set = metadata.iloc[test_index.values.flatten()], metadata.iloc[train_val_index.values.flatten()]
-    # kvs.update('test_set', test_set)
-    #
-    # train_val_set.reset_index(inplace=True, drop=True)
     test_index = pd.read_csv(os.path.join('sessions_final/FM', 'test.csv'))
     train_val_index = pd.read_csv(os.path.join('sessions_final/FM', 'train_val.csv'))
     test_set, train_val_set = metadata.iloc[test_index.values.flatten()], metadata.iloc[train_val_index.values.flatten()]
     train_val_set = pd.concat([train_val_set, test_set])
 
     train_val_set.reset_index(inplace=True, drop=True)
-
-    # dataset = datasets.KneeDataset(dataset=train_val_set)
-    # mean, std = estimate_mean_std(dataset)
-    # print(mean, std)
 
     for fold_num in range(5):
         logger.info(f'Training fold {fold_num}')
@@ -77,7 +67,6 @@ def main():
 
         mean, std = 0.0507, 0.2122  # lat
         # mean, std = 0.0509, 0.2125  # med
-        # mean, std = 0, 1
 
         print('Preparing datasets...')
         train_dataset = datasets.KneeDataset(

@@ -4,5 +4,5 @@ This repository contains the code for deep learning-based detection of osteophyt
 
 ResNet-18 was employed in this repository. To detect osteophytes in medial compartments (medial femoral and medial tibial), medial part of the bone mask and for the lateral ones (lateral femoral and lateral tibial), corresponding part was fed to the network.
 
-![Figure.1: Osteophyte detection model](figs/2D.jpg)
+![Figure.1: Osteophyte detection model](figs/2D.png)
 

@@ -51,44 +51,15 @@ class ModelTrainer:
         # Initialize and configure the model
         self.models = dict()
         self.models['OST'] = init_model().to(maybe_gpu)
-
-        ############################### freezing layers ###############################
-        if args.ft_portion == 'complete':
-            print('All the model layers require grad!')
-        else:
-            # child_counter = 1
-            # for child in self.models['OST'].children():  # self.models['OST'].encoder.children()
-            #     if child_counter < 6:
-            #         print("child ", child_counter, " frozen")
-            #         for param in child.parameters():
-            #             param.requires_grad = False
-            #     else:
-            #         print("child ", child_counter, " not frozen")
-            #     child_counter += 1
-
-            child_counter = 1
-            ft_module_names = []
-            ft_module_names.append('fc')
-
-            parameters = []
-            for k, v in self.models['OST'].named_parameters():
-                if child_counter >= 15:
-                    parameters.append({'params': v})
-                else:
-                    parameters.append({'params': v, 'lr': 0.0})
-                child_counter += 1
-
         self.models['OST'] = nn.DataParallel(self.models['OST'])
 
 
         # Configure the training
         self.num_epoch = args.epochs
         self.optimizers = (optim.Adam(
-            self.models['OST'].parameters(),  # parameters
+            self.models['OST'].parameters(),
             lr=args.learning_rate,
             weight_decay=args.weight_decay))
-
-        # self.lr_update_rule = {10: 0.01}
 
         self.losse = nn.BCEWithLogitsLoss().cuda()
 
@@ -122,14 +93,6 @@ class ModelTrainer:
                     data_batch_ds = next(loader_ds_iter)
 
                     xs_ds, ys_true_ds = data_batch_ds['mask'], data_batch_ds['Target']
-
-                    # b = xs_ds
-                    # a2 = b[0, 1, :, :].cpu().numpy()
-                    # a3 = b[0, 2, :, :].cpu().numpy()
-                    # plt.imshow(a2)
-                    # plt.show()
-                    # plt.imshow(a3)
-                    # plt.show()
 
                     fnames_acc['oai'].extend(data_batch_ds['ID_SIDE'])
 
@@ -231,20 +194,6 @@ class ModelTrainer:
             kvs.update('metrics_train', metrics_train)
             kvs.update('metrics_val', metrics_val)
 
-            # Learning rate update
-            # for s, m in self.lr_update_rule.items():
-            #     if epoch_idx == s:
-            #         for param_group in self.optimizers.param_groups:
-            #             param_group['lr'] *= m
-            #
-            #             # Add console logging
-            #             logger.info(f'Epoch: {epoch_idx}')
-            #             for subset, metrics in (('train', metrics_train),
-            #                                     ('val', metrics_val)):
-            #                 logger.info(f'{subset} metrics:')
-            #                 for k, v in metrics['datasetw'].items():
-            #                     logger.info(f'{k}: \n{v}')
-
             # Add TensorBoard logging
             for subset, metrics in (('train', metrics_train),
                                     ('val', metrics_val)):
@@ -279,30 +228,6 @@ class ModelTrainer:
                 metrics_val_best = metrics_val
                 fnames_train_best = fnames_train
                 fnames_val_best = fnames_val
-
-            # if loss_curr < loss_best:
-            #     loss_best = loss_curr
-            #     epoch_idx_best = epoch_idx
-            #     metrics_train_best = metrics_train
-            #     metrics_val_best = metrics_val
-            #     fnames_train_best = fnames_train
-            #     fnames_val_best = fnames_val
-
-            # if ap_curr > ap_best:
-            #     ap_best = ap_curr
-            #     epoch_idx_best = epoch_idx
-            #     metrics_train_best = metrics_train
-            #     metrics_val_best = metrics_val
-            #     fnames_train_best = fnames_train
-            #     fnames_val_best = fnames_val
-
-            # if ba_curr > ba_best:
-            #     ba_best = ba_curr
-            #     epoch_idx_best = epoch_idx
-            #     metrics_train_best = metrics_train
-            #     metrics_val_best = metrics_val
-            #     fnames_train_best = fnames_train
-            #     fnames_val_best = fnames_val
 
                 self.handlers_ckpt.save_new_ckpt(
                     model=self.models['OST'],

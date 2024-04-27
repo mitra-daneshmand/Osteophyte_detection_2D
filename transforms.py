@@ -21,18 +21,6 @@ class NoTransform(object):
         return args[0]
 
 
-class ToTensor(object):
-    def __call__(self, *args):
-        tmp = []
-        for e in args:
-            if e is not None:
-                tmp.append(torch.from_numpy(e))
-            else:
-                tmp.append(None)
-        # return [torch.from_numpy(e) for e in args]
-        return tmp
-
-
 class Normalize:
     def __init__(self, mean, std):
         self.mean = np.array(mean)

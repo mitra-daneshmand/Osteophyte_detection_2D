@@ -10,15 +10,10 @@ from model import Custom_VGG
 def init_model():
     args = parse_args()
 
-    # net = resnet10_2D(args.n_classes, in_channels=1, ngf=64)
-    if 'vgg' in args.backbone:
-        net = Custom_VGG(ipt_size=(300, 615), pretrained=True)
-
+    if args.pretrain:
+        net = PretrainedModel(args.backbone, args.dropout_rate, 1, True)
     else:
-        if args.pretrain:
-            net = PretrainedModel(args.backbone, args.dropout_rate, 1, True)
-        else:
-            net = KneeNet(args.backbone, args.dropout_rate, args.pretrain)
+        net = KneeNet(args.backbone, args.dropout_rate, args.pretrain)
     return net
 
 

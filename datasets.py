@@ -17,12 +17,8 @@ from tqdm import tqdm
 from seed import seed
 
 
-# H = 300
-# W = 245
 H = 500
 W = 673
-# H = 80
-# W = 245
 
 def read_mask(path_file):
     args = parse_args()
@@ -43,85 +39,8 @@ def read_mask(path_file):
         ret[0, :, :] = 0
         ret[1, :, :] = np.isin(mask[:, :, 1], 1).astype(np.uint8)
         ret[2, :, :] = np.isin(mask[:, :, 2], 2).astype(np.uint8)
-
-    ret0 = cv2.resize(ret[0, :, :], (W, H))
-    ret1 = cv2.resize(ret[1, :, :], (W, H))
-    ret2 = cv2.resize(ret[2, :, :], (W, H))
-    ret_final = np.empty((3, *(H, W)), dtype=mask.dtype)
-    ret_final[0, :, :] = ret0
-    ret_final[1, :, :] = ret1
-    ret_final[2, :, :] = ret2
-    # args = parse_args()
-    # tmp = cv2.imread(path_file)
-    # mask = np.zeros((H, W, 3))
-    # mask[:tmp.shape[0], :tmp.shape[1], :] = tmp
-    #
-    # # mask = mask[25:mask.shape[0]-25, :, :]
-    # # mask[:10, :, :] = 0
-    # # # mask[mask.shape[0] - 10:, :, :] = 0
-    # '''
-    # # if 'L' in path_file:
-    # #     mask = cv2.flip(mask, 1)
-    # '''
-    # '''
-    # if args.lm == 'medial':
-    #     mask[(mask != 1) & (mask != 2)] = 0
-    #
-    #     # tmp = mask.copy()
-    #     # mask[:, :, 0][(tmp[:, :, 1] == 1)] = 1
-    #     # mask[:, :, 1][(tmp[:, :, 1] == 1)] = 100
-    #     # mask[:, :, 2][(tmp[:, :, 1] == 1)] = 200
-    #
-    #     # mask[:, :, 0][(tmp[:, :, 2] == 2)] = 2
-    #     # mask[:, :, 1][(tmp[:, :, 2] == 2)] = 150
-    #     # mask[:, :, 2][(tmp[:, :, 2] == 2)] = 250
-    #
-    #     # mask = cv2.resize(mask, (W, H))
-    #     # mask = mask.reshape((1, *mask.shape))
-    #
-    #     # ret = np.empty((mask.shape), dtype=mask.dtype)
-    #     # ret[:, :, 0] = 0
-    #     # ret[:, :, 1] = np.isin(mask, 1).astype(np.uint8)
-    #     # ret[:, :, 2] = np.isin(mask, 2).astype(np.uint8)
-    # else:
-    #     mask[(mask != 100) & (mask != 200)] = 0
-    #     mask[mask == 100] = 1
-    #     mask[mask == 200] = 2
-    #     # ret = np.empty((mask.shape), dtype=mask.dtype)
-    #     # ret[:, :, 0] = 0
-    #     # ret[:, :, 1] = np.isin(mask, 1).astype(np.uint8)
-    #     # ret[:, :, 2] = np.isin(mask, 2).astype(np.uint8)
-    # '''
-    # mask[mask == 2] = 1
-    # mask[(mask != 0)] = 1
-    #
-    # ret_tmp = mask.copy()
-    # ret0 = cv2.resize(ret_tmp[:, :, 0], (W, H))
-    # ret1 = cv2.resize(ret_tmp[:, :, 1], (W, H))
-    # ret2 = cv2.resize(ret_tmp[:, :, 2], (W, H))
-    # ret_final = np.empty((3, *(H, W)), dtype=mask.dtype)
-    # ret_final[0, :, :] = ret0
-    # ret_final[1, :, :] = ret1
-    # ret_final[2, :, :] = ret2
-    #
-    # # ret2[ret2==2]=1
-    # # ret_final[2, :, :] = ret2
-    #
-    # # ret2[ret1==2]=1
-    # # ret_final[2, :, :] = ret2
-    # # ret_final[0, :, :] = 1
-    # # ret = (ret1+ret2)+1
-    # # ret1[ret1==2]=0
-    # # ret1[ret1==3]=0
-    # # ret1[ret1 != 1]=0
-    # # ret1[ret1 == 1]=3
-    # # ret_final[0, :, :] =ret1
-    #
-    # # ret_final = mask.reshape((1, *mask.shape))
-    #
-    # # if 'L' in path_file:
-    # #     mask = cv2.flip(mask, 1)
-    return ret  # ret_final
+   
+    return ret
 
 
 class KneeDataset(Dataset):
@@ -152,7 +71,6 @@ class KneeDataset(Dataset):
 
 
 def init_metadata(lm, target_comp, csv_dir):
-    # metadata = pd.read_csv(os.path.join(csv_dir, 'OAI_' + tissue + lm + '_imgs_metadata.csv'))
     metadata = pd.read_csv(os.path.join(csv_dir, 'OAI_bl_scaled_All_{}_imgs_metadata.csv'.format(lm)))
 
     metadata['path_mask'] = ''

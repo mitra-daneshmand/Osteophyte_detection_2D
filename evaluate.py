@@ -47,14 +47,7 @@ metadata = datasets.init_metadata(args.lm, args.target_comp, args.csv_dir)
 test_index = pd.read_csv(os.path.join(save_dir, 'test.csv'))
 test_set = metadata.iloc[test_index.values.flatten()]
 test_set['KL'] = test_set['KL'].astype(int)
-################### KL based evaluation ###################
-# inds = test_set[(test_set['KL'] > 1)].index  # no OA
-# inds = test_set[(test_set['KL'] != 2)].index  # early OA
-# inds = test_set[(test_set['KL'] < 3)].index  # severe OA
-# test_set.drop(inds, inplace=True)
-# test_set.reset_index(inplace=True, drop=True)
-# test_set['KL'] = test_set['KL'].astype(float)
-'''
+
 mean, std = 0.0509, 0.2125  # med
 # mean, std = 0.0507, 0.2122  # lat
 
@@ -92,14 +85,6 @@ for fold_idx in range(folds):
             y.append(ys_true)
             xs, ys_true = xs.to(maybe_gpu), ys_true.to(maybe_gpu)
 
-            # b = xs
-            # a2 = b[0, 1, :, :].cpu().numpy()
-            # a3 = b[0, 2, :, :].cpu().numpy()
-            # plt.imshow(a2)
-            # plt.show()
-            # plt.imshow(a3)
-            # plt.show()
-
             ys_pred = model(xs)
 
             preds_prog_fold.append(F.sigmoid(ys_pred).cpu().detach().numpy())
@@ -125,22 +110,11 @@ kvs.update('eval_type', 'test')
 np.savez_compressed(os.path.join(args.output_dir, args.target_comp, 'results.npz'), y_true=y_true, y_pred=test_res)
 
 curves()
-'''
-
 
 result = np.load(os.path.join(save_dir, 'results.npz'))
 
-################### KL based evaluation ###################
-# test_set.reset_index(inplace=True, drop=True)
-# inds = test_set[(test_set['KL'] == 1) | (test_set['KL'] == 0)].index  # no OA
-# inds = test_set[(test_set['KL'] == 2)].index  # early OA
-# inds = test_set[(test_set['KL'] == 3) | (test_set['KL'] == 4)].index  # severe OA
-# test_set.drop(inds, inplace=True)
-# test_set = test_set.iloc[inds]
-
-
-y_true = result['y_true']#[inds]
-test_res = result['y_pred']#[inds]
+y_true = result['y_true']
+test_res = result['y_pred']
 
 df = pd.DataFrame(columns=['ID', 'SIDE', 'OSTs', 'preds', 'probs'])
 df['ID'] = test_set['ID']
